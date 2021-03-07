@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, Menu } = require("electron");
 
 process.env.NODE_ENV = "development"
 
@@ -22,7 +22,7 @@ function createMainWindow() {
     }
   });
 
-  // open dev-tools when in devMode
+  // open dev-tools when environment is set to 'development'
   if (isDev) {
     mainWindow.webContents.openDevTools()
   }
@@ -36,12 +36,39 @@ app.whenReady().then(() => {
 
   mainWindow.on("closed", () => mainWindow.null);
 
+  const mainMenu = Menu.buildFromTemplate(menu);
+  Menu.setApplicationMenu(mainMenu);
+
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createMainWindow();
     }
   });
 });
+
+const menu = [
+  {
+    label: "File",
+    submenu: [
+      {
+        label: "Quit",
+        accelerator: "CmdOrCtrl+Q",
+        click: () => app.quit()
+      }
+    ]
+  },
+  ...(isDev ? [
+    {
+      label: "Developer",
+      submenu: [
+        { role: "reload" },
+        { role: "forcereload" },
+        { role: "separator" },
+        { role: "toggledevtools" }
+      ]
+    }
+  ] : [])
+];
 
 app.on('window-all-closed', () => {
   if (!isMac) {
