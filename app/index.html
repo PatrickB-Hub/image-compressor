@@ -9,6 +9,7 @@
       content="script-src 'self' 'unsafe-inline' 'unsafe-eval'"
     />
     <link rel="stylesheet" href="css/tailwind.css" />
+    <link rel="stylesheet" href="css/style.css" />
     <title>Image Compressor</title>
   </head>
   <body>
@@ -30,7 +31,6 @@
         </svg>
         <h3 class="text-xl font-bold">Image Compressor</h3>
       </div>
-
       <p>Choose images to resize</p>
       <form id="image-form">
         <div class="bg-white mt-2 p7 rounded mx-auto">
@@ -201,6 +201,82 @@
             </template>
           </div>
         </div>
+
+        <div class="mt-4">
+          <p>
+            <strong>Quality:</strong>
+            <em>The lower the quality, the smaller the file size</em>
+          </p>
+
+          <div class="items-center mt-4">
+            <div
+              x-data="handleRange()"
+              x-init="trigger()"
+              class="relative max-w-xl w-full"
+            >
+              <div>
+                <input
+                  type="range"
+                  step="1"
+                  x-bind:min="min"
+                  x-bind:max="max"
+                  x-on:input="trigger"
+                  x-model="value"
+                  class="
+                    absolute
+                    pointer-events-none
+                    appearance-none
+                    z-20
+                    h-2
+                    w-full
+                    opacity-0
+                    cursor-pointer
+                  "
+                />
+
+                <div class="relative z-10 h-2">
+                  <div
+                    class="
+                      absolute
+                      z-10
+                      left-0
+                      right-0
+                      bottom-0
+                      top-0
+                      rounded-md
+                      bg-gray-200
+                    "
+                  ></div>
+
+                  <div
+                    class="absolute z-20 top-0 bottom-0 rounded-md bg-blue-400"
+                    x-bind:style="'right:'+sliderLength+'%; left:'+0+'%'"
+                  ></div>
+
+                  <div
+                    class="
+                      absolute
+                      z-30
+                      w-6
+                      h-6
+                      top-0
+                      left-0
+                      bg-blue-400
+                      rounded-full
+                      -mt-2
+                      -ml-3
+                    "
+                    x-bind:style="'left: '+value+'%'"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full rounded-xl bg-gray-200 p-2 mt-8">
+          Resize
+        </button>
       </form>
     </div>
 
