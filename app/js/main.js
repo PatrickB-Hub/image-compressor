@@ -1,5 +1,6 @@
 const path = require("path");
 const os = require("os");
+const { ipcRenderer } = require("electron");
 
 const fileSizeTypes = ["B", "KB", "MB", "GB", "TB"];
 
@@ -60,13 +61,25 @@ function handleRange() {
 }
 
 const form = document.getElementById("image-form");
+const outputPath = document.getElementById("output-path");
+
+outputPath.innerText = path.join(os.homedir(), "imagemin");
 
 // On submit
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
   if (imageFiles.length > 0) {
-    console.log("quality", quality);
-    console.log("images", imageFiles);
+    const imagePaths = imageFiles.map((image) => image.path);
+
+    ipcRenderer.send("compress", {
+      imagePaths,
+      quality,
+    });
   }
+});
+
+// On done
+ipcRenderer.on("done", () => {
+  console.log("finished compressing images");
 });

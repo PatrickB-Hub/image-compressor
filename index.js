@@ -1,4 +1,11 @@
-const { app, BrowserWindow, Menu } = require("electron");
+const path = require('path');
+const os = require('os');
+const { app, BrowserWindow, Menu, ipcMain, shell } = require("electron");
+const imagemin = require('imagemin');
+const imageminMozjpeg = require('imagemin-mozjpeg');
+const imageminPngquant = require('imagemin-pngquant');
+const slash = require('slash');
+const log = require('electron-log');
 
 process.env.NODE_ENV = "development"
 
@@ -69,6 +76,35 @@ const menu = [
     }
   ] : [])
 ];
+
+ipcMain.on('compress', (_, options) => {
+  options.dest = path.join(os.homedir(), 'imagemin')
+  compressImages(options)
+})
+
+async function compressImages({ imagePaths, quality, dest }) {
+  try {
+    const pngQuality = quality / 100
+
+    const files = await imagemin(imagePaths.map((path) => slash(path)), {
+      destination: dest,
+      plugins: [
+        imageminMozjpeg({ quality }),
+        imageminPngquant({
+          quality: [pngQuality, pngQuality],
+        }),
+      ],
+    })
+
+    log.info(files)
+
+    shell.openPath(dest)
+
+    mainWindow.webContents.send('done')
+  } catch (err) {
+    log.error(err)
+  }
+}
 
 app.on('window-all-closed', () => {
   if (!isMac) {
