@@ -38,6 +38,20 @@ function createMainWindow() {
   mainWindow.loadURL(`file://${__dirname}/app/index.html`);
 }
 
+function createAboutWindow() {
+  aboutWindow = new BrowserWindow({
+    title: "About Image Compressor",
+    width: 300,
+    height: 250,
+    resizable: false,
+    icon: `${__dirname}/assets/icons/Icon_256x256.png`,
+    backgroundColor: "#fff"
+  });
+
+  // render the about page in the about window
+  aboutWindow.loadURL(`file://${__dirname}/app/about.html`);
+}
+
 app.whenReady().then(() => {
   createMainWindow();
 
@@ -54,6 +68,17 @@ app.whenReady().then(() => {
 });
 
 const menu = [
+  ...(isMac ? [
+    {
+      label: app.name,
+      submenu: [
+        {
+          label: "About",
+          click: createAboutWindow
+        }
+      ]
+    }
+  ] : []),
   {
     label: "File",
     submenu: [
@@ -72,6 +97,17 @@ const menu = [
         { role: "forcereload" },
         { role: "separator" },
         { role: "toggledevtools" }
+      ]
+    }
+  ] : []),
+  ...(!isMac ? [
+    {
+      label: "Help",
+      submenu: [
+        {
+          label: "About",
+          click: createAboutWindow
+        }
       ]
     }
   ] : [])
